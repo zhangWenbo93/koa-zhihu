@@ -6,7 +6,7 @@ const { secret } = require('../config')
 const { find, findById, create, update, delete: del, login, checkOwner, listFollowing, listFollowers, checkUserExist, follow, unfollow, listFollowingTopics, followTopic, unfollowTopic } = require('../controllers/users')
 
 const { checkTopicsExist } = require('../controllers/topics');
-
+const auth = jwt({ secret });
 // const auth = async (ctx, next) => {
 //     const { authorization = '' } = ctx.request.header;
 //     const token = authorization.replace('Bearer ', '');
@@ -18,8 +18,6 @@ const { checkTopicsExist } = require('../controllers/topics');
 //     }
 //     await next();
 // }
-
-const auth = jwt({ secret });
 
 router.get('/', find);
 router.get('/:id', findById);
