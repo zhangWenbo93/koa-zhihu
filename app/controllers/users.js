@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const Topic = require('../models/topics');
 const { secret } = require('../config');
 const { isValidObjectId } = require('mongoose');
 

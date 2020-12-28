@@ -1,4 +1,5 @@
 const Topic = require('../models/topics');
+const User = require('../models/users');
 const { isValidObjectId } = require('mongoose');
 
 class TopicsCtl {
@@ -50,6 +51,11 @@ class TopicsCtl {
         } else {
             ctx.throw(404, '话题不存在')
         }
+    }
+
+    async listTopicFollowers(ctx) {
+        const user = await User.find({ followingTopics: ctx.params.id });
+        ctx.body = user;
     }
 }
 
