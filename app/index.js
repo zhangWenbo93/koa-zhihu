@@ -6,14 +6,14 @@ const parameter = require('koa-parameter');
 const mongoose = require('mongoose');
 const path = require('path');
 const { connectionStr } = require('./config');
+const routing = require('./routes');
 
-mongoose.connect(connectionStr, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log('mongodb 连接成功'));
+mongoose.connect(connectionStr, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, () => console.log('mongodb 连接成功'));
 mongoose.connection.on('error', console.error);
 
 const app = new Koa();
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3001;
-const routing = require('./routes');
 
 app.use(KoaStatic(path.join(__dirname, 'public')));
 app.use(error({
