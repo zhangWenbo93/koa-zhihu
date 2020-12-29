@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
+const Questions = require('../models/questions');
 const { secret } = require('../config');
 const { isValidObjectId } = require('mongoose');
 
@@ -164,6 +165,11 @@ class UsersCtl {
         })
 
         ctx.status = 204
+    }
+
+    async listQuestions(ctx) {
+        const question = await Questions.find({ questioner: ctx.params.id });
+        ctx.body = question;
     }
 }
 

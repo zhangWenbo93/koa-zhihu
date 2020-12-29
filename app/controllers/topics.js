@@ -1,5 +1,6 @@
 const Topic = require('../models/topics');
 const User = require('../models/users');
+const Questions = require('../models/questions');
 const { isValidObjectId } = require('mongoose');
 
 class TopicsCtl {
@@ -37,8 +38,7 @@ class TopicsCtl {
             avatar_url: { type: 'string', required: false },
             introduction: { type: 'string', required: false }
         })
-
-        await Topic.findByIdAndUpdate(ctx.params.id, ctx.request.body);
+        await ctx.state.topic.updateOne(ctx.request.body)
         const topic = await Topic.findById(ctx.params.id);
         ctx.body = topic;
     }
@@ -47,6 +47,7 @@ class TopicsCtl {
         if (isValidObjectId(ctx.params.id)) {
             const topic = await Topic.findById(ctx.params.id);
             if (!topic) { ctx.throw(404, '话题不存在') };
+            ctx.state.topic = topic;
             await next();
         } else {
             ctx.throw(404, '话题不存在')
@@ -56,6 +57,11 @@ class TopicsCtl {
     async listTopicFollowers(ctx) {
         const user = await User.find({ followingTopics: ctx.params.id });
         ctx.body = user;
+    }
+
+    async listQuestions(ctx) {
+        const question = await Questions.find({ topics: ctx.params.id });
+        ctx.body = question;
     }
 }
 
