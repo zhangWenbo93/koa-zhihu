@@ -57,6 +57,33 @@ const userSchema = new Schema({
             }
         ],
         select: false
+    },
+    likeingAnswers: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Answer'
+            }
+        ],
+        select: false
+    },
+    disLikeingAnswers: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Answer'
+            }
+        ],
+        select: false
+    },
+    collectingAnswers: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Answer'
+            }
+        ],
+        select: false
     }
 })
 

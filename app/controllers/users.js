@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const Questions = require('../models/questions');
+const Answer = require('../models/answers');
 const { secret } = require('../config');
 const { isValidObjectId } = require('mongoose');
 
@@ -157,7 +158,6 @@ class UsersCtl {
         const me = await User.findById(ctx.state.user._id).select('+followingTopics');
 
         me.followingTopics.map((id, index) => {
-            console.log();
             if (id.toString() === paramsId) {
                 me.followingTopics.splice(index, 1);
                 me.save();
@@ -170,6 +170,91 @@ class UsersCtl {
     async listQuestions(ctx) {
         const question = await Questions.find({ questioner: ctx.params.id });
         ctx.body = question;
+    }
+
+    async listLikeingAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+likeingAnswers').populate('likeingAnswers');
+        if (!user) { ctx.throw(404, '用户不存在') };
+        ctx.body = user.likeingAnswers;
+    }
+
+    async likeAnswer(ctx, next) {
+        const id = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+likeingAnswers');
+        if (!me.likeingAnswers.map(id => id.toString()).includes(id)) {
+            me.likeingAnswers.push(id);
+            me.save();
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: 1 } });
+        }
+        ctx.status = 204;
+        await next();
+    }
+
+    async unLikeAnswer(ctx) {
+        const paramsId = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+likeingAnswers');
+        const index = me.likeingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if (index > -1) {
+            me.likeingAnswers.splice(index, 1);
+            me.save();
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: -1 } });
+        }
+        ctx.status = 204
+    }
+
+    async listDisLikeingAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+disLikeingAnswers').populate('disLikeingAnswers');
+        if (!user) { ctx.throw(404, '用户不存在') };
+        ctx.body = user.disLikeingAnswers;
+    }
+
+    async disLikeAnswer(ctx, next) {
+        const id = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+disLikeingAnswers');
+        if (!me.disLikeingAnswers.map(id => id.toString()).includes(id)) {
+            me.disLikeingAnswers.push(id);
+            me.save();
+        }
+        ctx.status = 204;
+        await next();
+    }
+
+    async unDisLikeAnswer(ctx) {
+        const paramsId = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+disLikeingAnswers');
+        const index = me.disLikeingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if (index > -1) {
+            me.disLikeingAnswers.splice(index, 1);
+            me.save();
+        }
+        ctx.status = 204
+    }
+
+    async listCollectingAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+collectingAnswers').populate('collectingAnswers');
+        if (!user) { ctx.throw(404, '用户不存在') };
+        ctx.body = user.collectingAnswers;
+    }
+
+    async collectAnswer(ctx) {
+        const id = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+collectingAnswers');
+        if (!me.collectingAnswers.map(id => id.toString()).includes(id)) {
+            me.collectingAnswers.push(id);
+            me.save();
+        }
+        ctx.status = 204;
+    }
+
+    async unCollectAnswer(ctx) {
+        const paramsId = ctx.params.id;
+        const me = await User.findById(ctx.state.user._id).select('+collectingAnswers');
+        const index = me.collectingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if (index > -1) {
+            me.collectingAnswers.splice(index, 1);
+            me.save();
+        }
+        ctx.status = 204
     }
 }
 
