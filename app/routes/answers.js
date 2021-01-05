@@ -3,7 +3,7 @@ const jwt = require('koa-jwt');
 const { secret } = require('../config');
 const { find, findById, checkAnswerer, create, update, checkAnswerExist, delete: del } = require('../controllers/answers');
 
-const router = new Router({ 'prefix': '/questions/:questionId/answer' });
+const router = new Router({ 'prefix': '/questions/:questionId/answers' });
 const auth = jwt({ secret });
 
 router.get('/', find);
