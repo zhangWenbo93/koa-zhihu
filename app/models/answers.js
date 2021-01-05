@@ -9,6 +9,6 @@ const answerSchema = new Schema({
     // 用 questionId 表示从属于某一个问题
     questionId: { type: String, required: true },
     voteCount: { type: Number, required: true, default: 0 }
-})
+}, { timestamps: true })
 
 module.exports = model('Answer', answerSchema);
